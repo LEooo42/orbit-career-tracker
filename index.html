@@ -2,185 +2,66 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#050814">
-  <meta name="description" content="A local-first yearly astrophysics career tracker.">
-  <link rel="icon" type="image/png" sizes="32x32" href="/orbit-career-tracker/icon.png"/>
-  <title>Orbit — Astrophysics Career Tracker</title>
-  <style>
-    :root{
-      color-scheme:dark;--bg:#050814;--panel:rgba(13,22,45,.82);--panel2:#101a35;
-      --line:rgba(145,169,255,.17);--line2:rgba(145,169,255,.32);--text:#f4f7ff;
-      --muted:#a8b3d1;--dim:#74809f;--blue:#819dff;--cyan:#6de6ff;--green:#66e2b2;
-      --gold:#ffd276;--red:#ff829e;--shadow:0 22px 70px rgba(0,0,0,.35);--r:22px
-    }
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--text);
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;
-      background:
-        radial-gradient(circle at 10% 5%,rgba(74,104,255,.2),transparent 30%),
-        radial-gradient(circle at 90% 15%,rgba(70,220,255,.12),transparent 28%),
-        radial-gradient(circle at 50% 100%,rgba(105,70,255,.1),transparent 35%),var(--bg)}
-    body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.45;
-      background-image:radial-gradient(circle,#fff 0 .7px,transparent .9px),radial-gradient(circle,#81dcff 0 .65px,transparent .85px);
-      background-position:0 0,45px 70px;background-size:145px 145px,215px 215px;mask-image:linear-gradient(#000,transparent 92%)}
-    button,input,select,textarea{font:inherit}button,select,input[type=checkbox]{cursor:pointer}
-    button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(109,230,255,.38);outline-offset:2px}
-    .app{width:min(1420px,calc(100% - 30px));margin:auto;padding:26px 0 70px}.glass{border:1px solid var(--line);
-      background:linear-gradient(145deg,rgba(18,31,64,.82),rgba(7,12,27,.88));box-shadow:var(--shadow);backdrop-filter:blur(18px)}
-    .topbar{display:flex;gap:24px;align-items:center;justify-content:space-between;padding:23px 25px;border-radius:28px;overflow:hidden;position:relative}
-    .topbar:after{content:"";position:absolute;width:260px;height:260px;right:-70px;top:-115px;border:1px solid rgba(109,230,255,.13);
-      border-radius:50%;box-shadow:0 0 0 35px rgba(129,157,255,.025),0 0 0 70px rgba(129,157,255,.015)}
-    .brand,.controls{position:relative;z-index:1;display:flex;align-items:center}.brand{gap:14px}.controls{gap:10px;justify-content:flex-end;flex-wrap:wrap}
-    .orbit{width:48px;height:48px;border:1px solid rgba(109,230,255,.32);border-radius:50%;position:relative;display:grid;place-items:center;background:rgba(109,230,255,.06)}
-    .orbit:before{content:"";width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 17px var(--cyan)}
-    .orbit:after{content:"";position:absolute;width:35px;height:13px;border:1px solid var(--blue);border-radius:50%;transform:rotate(-18deg)}
-    .kicker{margin:0 0 3px;color:var(--cyan);font-size:.73rem;font-weight:850;letter-spacing:.15em;text-transform:uppercase}
-    h1,h2,h3,p{margin-top:0}h1{font-size:clamp(1.5rem,3vw,2.15rem);line-height:1;margin-bottom:5px;letter-spacing:-.045em}.sub{margin:0;color:var(--muted);font-size:.91rem}
-    select,.input,textarea{border:1px solid var(--line2);background:rgba(3,8,20,.72);color:var(--text);border-radius:12px;padding:11px 12px;min-height:43px}
-    select{min-width:155px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:43px;padding:10px 14px;border:1px solid var(--line2);
-      border-radius:12px;background:rgba(12,20,43,.75);color:var(--text);font-weight:780;transition:.18s ease}.btn:hover{transform:translateY(-1px);background:rgba(25,39,78,.88);border-color:rgba(145,169,255,.55)}
-    .btn.primary{color:#03101a;background:linear-gradient(135deg,var(--blue),var(--cyan));border-color:rgba(200,247,255,.55)}.btn.danger:hover{color:#ffd4df;background:rgba(255,130,158,.1);border-color:rgba(255,130,158,.35)}
-    .hero{display:grid;grid-template-columns:1.35fr .65fr;gap:17px;margin-top:17px}.mission,.overall{border-radius:28px}.mission{padding:clamp(25px,4vw,42px);position:relative;overflow:hidden}
-    .mission:after{content:"";position:absolute;width:340px;height:340px;right:-105px;bottom:-170px;border:1px solid rgba(109,230,255,.12);border-radius:50%;box-shadow:0 0 0 38px rgba(129,157,255,.018)}
-    .mission>*{position:relative;z-index:1}.mission h2{max-width:780px;font-size:clamp(1.8rem,4vw,3.25rem);line-height:1.05;letter-spacing:-.055em;margin-bottom:12px}.mission>p:not(.kicker){max-width:730px;color:var(--muted);font-size:1.02rem}
-    .pills{display:flex;gap:8px;flex-wrap:wrap}.pill,.badge{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:rgba(4,9,22,.52);font-weight:750}
-    .pill{gap:7px;padding:7px 10px;color:#cad3ed;font-size:.76rem}.pill:before{content:"";width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan)}
-    .overall{padding:27px;display:grid;place-items:center;text-align:center}.ring{--p:0deg;width:172px;height:172px;border-radius:50%;display:grid;place-items:center;position:relative;margin-bottom:18px;background:conic-gradient(var(--cyan) var(--p),rgba(120,145,207,.12) 0)}
-    .ring:before{content:"";position:absolute;width:138px;height:138px;border-radius:50%;border:1px solid var(--line);background:#091023}.ring>div{position:relative}.percent{display:block;font-size:2.2rem;font-weight:880;letter-spacing:-.06em}.ring small{color:var(--dim);font-weight:850;letter-spacing:.09em;text-transform:uppercase}
-    .overall h3{margin-bottom:5px}.overall p{margin:0;color:var(--muted);font-size:.86rem}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:17px}.stat{padding:18px;border:1px solid var(--line);border-radius:18px;background:rgba(10,17,38,.7)}
-    .stat small{display:block;color:var(--dim);font-weight:850;letter-spacing:.08em;text-transform:uppercase}.stat strong{display:block;font-size:clamp(1.35rem,3vw,2rem);letter-spacing:-.045em;margin:3px 0}.stat span{display:block;color:var(--muted);font-size:.76rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin:32px 0 15px}.section-head h2{font-size:clamp(1.45rem,3vw,2.1rem);letter-spacing:-.04em;margin-bottom:4px}.section-head p{margin:0;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.category{--accent:var(--cyan);border:1px solid var(--line);border-radius:20px;overflow:hidden;background:linear-gradient(155deg,rgba(17,28,57,.84),rgba(7,12,27,.86));box-shadow:0 14px 40px rgba(0,0,0,.18)}
-    .cat-head{padding:19px;border-bottom:1px solid rgba(145,169,255,.09)}.cat-row{display:flex;align-items:center;gap:12px}.cat-icon{width:41px;height:41px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:13px;background:color-mix(in srgb,var(--accent) 9%,transparent);color:var(--accent);font-size:1.05rem;font-weight:900}
-    .cat-copy{min-width:0;flex:1}.cat-copy h3{font-size:.98rem;margin-bottom:1px}.cat-copy span{color:var(--muted);font-size:.76rem}.cat-pct{color:var(--accent);font-weight:880}.track{height:7px;margin-top:14px;background:rgba(120,145,207,.12);border-radius:999px;overflow:hidden}.fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 60%,white));box-shadow:0 0 15px color-mix(in srgb,var(--accent) 28%,transparent)}
-    .tasks{list-style:none;padding:0;margin:0}.task{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;align-items:start;padding:14px 18px;border-bottom:1px solid rgba(145,169,255,.07)}.task:hover{background:rgba(129,157,255,.035)}.task.done{opacity:.64}
-    .check{appearance:none;width:22px;height:22px;margin-top:2px;border:1px solid rgba(145,169,255,.4);border-radius:7px;background:rgba(3,8,20,.65);display:grid;place-items:center}.check:after{content:"";width:9px;height:5px;border-left:2px solid #03101a;border-bottom:2px solid #03101a;transform:translateY(-1px) rotate(-45deg) scale(0)}.check:checked{background:var(--green);border-color:var(--green)}.check:checked:after{transform:translateY(-1px) rotate(-45deg) scale(1)}
-    .task-title{margin:0;font-size:.9rem;font-weight:720;overflow-wrap:anywhere}.done .task-title{text-decoration:line-through;color:var(--muted)}.notes{margin:4px 0 0;color:var(--muted);font-size:.76rem;overflow-wrap:anywhere}.meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.badge{padding:3px 7px;color:var(--dim);font-size:.67rem}.badge.win{color:#ffe2a5;border-color:rgba(255,210,118,.24);background:rgba(255,210,118,.06)}.badge.soon{color:#ffe2a5;border-color:rgba(255,210,118,.26)}.badge.late{color:#ffc0cf;border-color:rgba(255,130,158,.27)}.badge.ok{color:#abf2d5;border-color:rgba(102,226,178,.25)}
-    .trash{width:32px;height:32px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--dim);font-size:1rem}.trash:hover{color:#ffb7c7;background:rgba(255,130,158,.08);border-color:rgba(255,130,158,.2)}.add-cat{width:calc(100% - 36px);margin:15px 18px 18px;border-style:dashed;color:var(--muted)}.empty{padding:22px 18px 6px;color:var(--muted);text-align:center;font-size:.83rem}
-    footer{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:22px 3px;color:var(--dim);font-size:.76rem}.saved:before{content:"";display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
-    dialog{width:min(590px,calc(100% - 26px));max-height:calc(100vh - 30px);padding:0;border:1px solid var(--line2);border-radius:24px;background:#0a1022;color:var(--text);box-shadow:0 30px 90px rgba(0,0,0,.65)}dialog::backdrop{background:rgba(1,4,12,.8);backdrop-filter:blur(8px)}
-    .modal-head{display:flex;justify-content:space-between;gap:16px;padding:22px 23px 16px;border-bottom:1px solid var(--line)}.modal-head h2{font-size:1.3rem;margin-bottom:4px}.modal-head p{margin:0;color:var(--muted);font-size:.82rem}.x{border:0;background:transparent;color:var(--muted);font-size:1.45rem}.form{display:grid;gap:15px;padding:20px 23px 7px}.field{display:grid;gap:6px}.label{color:var(--dim);font-size:.72rem;font-weight:850;letter-spacing:.08em;text-transform:uppercase}.row{display:grid;grid-template-columns:1fr 1fr;gap:13px}textarea{min-height:88px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:9px;padding:18px 23px 23px}
-    .toastbox{position:fixed;right:17px;bottom:17px;z-index:20;width:min(350px,calc(100% - 34px));display:grid;gap:8px;pointer-events:none}.toast{padding:12px 14px;border:1px solid rgba(102,226,178,.25);border-radius:12px;background:rgba(8,19,31,.97);color:#dbfaec;box-shadow:0 15px 45px rgba(0,0,0,.4);animation:in .2s ease}@keyframes in{from{opacity:0;transform:translateY(8px)}}
-    @media(max-width:950px){.topbar{align-items:flex-start;flex-direction:column}.controls{justify-content:flex-start}.hero{grid-template-columns:1fr}.overall{grid-template-columns:auto 1fr;gap:22px;text-align:left}.ring{width:140px;height:140px;margin:0}.ring:before{width:110px;height:110px}.stats{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:700px){.app{width:calc(100% - 18px);padding-top:9px}.topbar,.mission,.overall{border-radius:21px}.topbar{padding:18px}.controls,.controls select{width:100%}.controls .btn{flex:1}.hero{gap:11px;margin-top:11px}.mission,.overall{padding:21px}.overall{grid-template-columns:1fr;text-align:center}.ring{width:154px;height:154px}.ring:before{width:122px;height:122px}.grid,.stats,.row{grid-template-columns:1fr}.section-head{align-items:flex-start;flex-direction:column}.task{padding:14px}.add-cat{width:calc(100% - 28px);margin-left:14px;margin-right:14px}}
-    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#191919">
+  <meta name="description" content="A compact, local-first tracker for astrophysics goals and achievements.">
+  <title>Astron Tracker</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="app">
-    <header class="topbar glass">
-      <div class="brand"><div class="orbit" aria-hidden="true"></div><div><p class="kicker">Academic Mission Control</p><h1>Orbit</h1><p class="sub">Astrophysics career goals, milestones, and achievements.</p></div></div>
-      <div class="controls"><select id="year" aria-label="Academic year"></select><button class="btn" id="newYear">＋ New year</button><button class="btn primary" id="add">＋ Add item</button></div>
+  <main class="tracker-shell">
+    <header class="tracker-header">
+      <div class="identity"><span class="scope">ASTRON / TRACKER</span><h1>Trajectory</h1></div>
+      <div class="header-actions">
+        <select id="year" aria-label="Academic year"></select>
+        <button class="quiet-button" id="newYear">New year</button>
+        <button class="primary-button" id="addItem">Add item</button>
+        <details class="more-menu">
+          <summary aria-label="More options">•••</summary>
+          <div class="menu-panel">
+            <button id="exportData">Export data</button>
+            <button id="importData">Import data</button>
+            <button class="danger" id="clearYear">Clear current year</button>
+          </div>
+        </details>
+      </div>
     </header>
 
-    <section class="hero">
-      <article class="mission glass"><p class="kicker" id="yearLabel"></p><h2>Build the evidence, not just the résumé.</h2><p>Track demanding academics, authentic research, space-science experience, public work, and the milestones that turn long-term ambition into a credible scientific career.</p><div class="pills"><span class="pill">Local-first</span><span class="pill">Auto-saved</span><span class="pill">No account required</span></div></article>
-      <aside class="overall glass"><div class="ring" id="ring"><div><strong class="percent" id="percent">0%</strong><small>Complete</small></div></div><div><h3 id="progressTitle">Mission initialized</h3><p id="progressText">Complete a goal to establish momentum.</p></div></aside>
+    <section class="summary" aria-label="Year summary">
+      <div class="progress-cell">
+        <div class="progress-ring" id="progressRing"><span id="progress">0%</span></div>
+        <div><span class="label">Year progress</span><strong id="progressNote">0 / 0 complete</strong></div>
+      </div>
+      <div class="metric"><span class="label">Next date</span><strong id="nextDate">None</strong><small id="nextTitle">No upcoming goals</small></div>
+      <div class="metric"><span class="label">Achievements</span><strong id="achievements">0</strong><small>recorded this year</small></div>
     </section>
 
-    <section class="stats"><article class="stat"><small>Completed</small><strong id="completed">0</strong><span id="completedNote">of 0 items</span></article><article class="stat"><small>Next deadline</small><strong id="deadline">—</strong><span id="deadlineNote">No upcoming goals</span></article><article class="stat"><small>Achievements</small><strong id="wins">0</strong><span>logged this academic year</span></article><article class="stat"><small>Active categories</small><strong id="activeCats">0</strong><span id="catNote">of 7 mission areas</span></article></section>
+    <nav class="category-tabs" id="categoryTabs" aria-label="Tracker categories"></nav>
 
-    <section><div class="section-head"><div><p class="kicker">Yearly flight plan</p><h2>Goals and achievements</h2><p>Check items off, log wins, and add new targets as the year evolves.</p></div><button class="btn danger" id="clear">Clear current year</button></div><div class="grid" id="grid"></div></section>
-    <footer><span class="saved">Saved in this browser</span><span>Local Storage is device- and browser-specific. Back up important records separately.</span></footer>
+    <section class="list-panel">
+      <div class="list-heading">
+        <div><span class="label" id="categoryLabel">Academic</span><h2 id="categoryProgress">0 of 0 complete</h2></div>
+        <label class="completed-toggle"><input type="checkbox" id="showDone">Show completed</label>
+      </div>
+      <div class="task-list" id="taskList"></div>
+      <footer class="tracker-footer"><span>Saved in this browser</span><span id="visibleCount">0 visible</span></footer>
+    </section>
   </main>
 
-  <dialog id="dialog">
-    <form id="form">
-      <div class="modal-head"><div><h2>Add a yearly item</h2><p>Create a goal or log an achievement you have already earned.</p></div><button type="button" class="x" id="close" aria-label="Close">×</button></div>
-      <div class="form">
-        <label class="field"><span class="label">Title</span><input class="input" id="title" maxlength="160" required placeholder="Publish optical pointing project v1.0"></label>
-        <div class="row"><label class="field"><span class="label">Category</span><select id="category"></select></label><label class="field"><span class="label">Type</span><select id="type"><option value="goal">Goal</option><option value="achievement">Achievement</option></select></label></div>
-        <label class="field"><span class="label">Target or completion date</span><input class="input" id="date" type="date"></label>
-        <label class="field"><span class="label">Notes</span><textarea class="input" id="notes" maxlength="400" placeholder="Optional context, success metric, or next step"></textarea></label>
+  <dialog id="itemDialog">
+    <form id="itemForm">
+      <div class="modal-title"><div><span class="label">New record</span><h2>Add an item</h2></div><button type="button" id="closeDialog" aria-label="Close">×</button></div>
+      <label>Title<input name="title" required maxlength="160" autofocus></label>
+      <div class="form-row">
+        <label>Category<select name="category" id="itemCategory"></select></label>
+        <label>Type<select name="type"><option value="goal">Goal</option><option value="achievement">Achievement</option></select></label>
       </div>
-      <div class="modal-actions"><button type="button" class="btn" id="cancel">Cancel</button><button class="btn primary">Save item</button></div>
+      <label>Date<input name="date" type="date"></label>
+      <label>Notes<textarea name="notes" maxlength="400" rows="2"></textarea></label>
+      <div class="modal-actions"><button type="button" class="quiet-button" id="cancelDialog">Cancel</button><button class="primary-button">Save</button></div>
     </form>
   </dialog>
-  <div class="toastbox" id="toasts" aria-live="polite"></div>
-
-  <script>
-    "use strict";
-    const KEY="orbit-career-tracker-v1";
-    const categories=[
-      ["academic","Academic & Testing","∑","#94a8ff"],["engineering","Engineering & Portfolio","⌁","#6de6ff"],
-      ["research","Research & Publications","◈","#b795ff"],["observing","Observing & Data Analysis Runs","◎","#62dbbf"],
-      ["conference","Conferences & Talks","↗","#ffb97a"],["teaching","Teaching & Mentorship","◇","#ff8fb2"],
-      ["awards","Grants & Awards","★","#ffd66e"]
-    ];
-    const seedRows=[
-      ["research","Archive Berkeley coursework and write a one-page academic reflection","2026-08-31","Save the astronomy syllabus, transcript, history paper, assignments, and ten specific memories."],
-      ["academic","Take one full digital SAT diagnostic without preparation","2026-08-31","Record section scores and classify errors; intensive SAT preparation comes after the PET decision."],
-      ["academic","Confirm the Caltech chemistry requirement path","2026-09-15","Check the official transcript and create a documented remediation plan if chemistry is missing."],
-      ["engineering","Create the optical pointing project proposal, architecture, and GitHub repository","2026-08-31","Define measurable questions around exposure, blur, noise, jitter, and centroid accuracy."],
-      ["conference","Register for NASA Space Apps and monitor Israel or virtual options","2026-08-26","Participation remains optional; proceed only with a strong challenge and team."],
-      ["engineering","Secure a school supervisor and approve the flagship project scope","2026-09-15","Ask whether it can serve as the electronics final project and a competition entry."],
-      ["awards","Start the Young Scientists and Developers Competition submission","2026-09-30","Confirm eligibility, the nomination process, abstract requirements, and school responsibility."],
-      ["academic","Register for the winter PET","2026-10-07","Keep the official confirmation in the academic archive."],
-      ["engineering","Build the minimum viable optical image and centroid pipeline","2026-10-31","Capture images, save metadata, correct dark frames, detect points, and measure repeatability."],
-      ["observing","Complete an authentic exoplanet-transit analysis tutorial","2026-10-31","Produce the first light curve and document each reduction stage in your own words."],
-      ["conference","Make the final NASA Space Apps go/no-go decision","2026-10-31","Proceed only if the challenge fits scientific space work and preparation remains limited."],
-      ["awards","Submit Young Scientists abstract or selection materials","2026-11-15","State the problem, method, variables, metrics, and exact personal contribution without hype."],
-      ["conference","Complete NASA Space Apps if it passes the strategic gate","2026-11-15","Build one technically credible solution; skip this if the team or challenge is weak."],
-      ["engineering","Complete three controlled optical-system experiments","2026-11-30","Test exposure, blur, and simulated jitter against defined performance metrics."],
-      ["academic","Sit the winter PET","2026-12-06","Pause major project work five days before the test and protect sleep."],
-      ["research","Write a four-to-six-page preliminary technical report","2026-12-31","Include methods, early graphs, raw-data organization, failures, and next experiments."],
-      ["academic","Review PET results and choose the SAT, April PET, or combined branch","2027-01-20","Use a strict stopping rule so PET preparation does not consume the full year."],
-      ["conference","Attend at least one serious Israel Space Week event","2027-01-28","Prepare a 30-second introduction, three questions, and a simple project page."],
-      ["engineering","Finish project beta with calibration and jitter or temperature testing","2027-01-31","Prepare a one-page technical brief for external feedback."],
-      ["teaching","Request narrow technical feedback from relevant researchers or engineers","2027-02-15","Share a working prototype, preliminary data, repository, and three precise questions."],
-      ["observing","Collect at least half of the final experimental dataset","2027-02-28","Freeze core features and focus on controls, repetitions, uncertainty, and reproducibility."],
-      ["observing","Analyze at least five authentic exoplanet-transit datasets","2027-02-28","Compare data quality, reference-star choices, uncertainty, and failed reductions."],
-      ["research","Incorporate at least one external technical review","2027-02-28","Record the criticism, changes made, and limitations that remain."],
-      ["academic","Take the March SAT only if practice scores justify it","2027-03-06","Target 1550+ overall and 790–800 Math; otherwise move to a later date."],
-      ["awards","Present at Young Scientists or arrange equivalent external evaluation","2027-03-31","Prepare technical and nontechnical explanations, limitations, and contribution boundaries."],
-      ["engineering","Publish the optical project GitHub version 1.0","2027-03-31","Include setup, diagrams, data format, example analysis, results, and limitations."],
-      ["academic","Enter Bagrut protection mode and freeze extracurricular expansion","2027-04-01","No new hardware, clubs, certificates, or major redesigns through the exam period."],
-      ["research","Complete the final technical report and data archive","2027-05-31","Use controlled measurements, uncertainty, reproducible analysis, and honest limitations."],
-      ["teaching","Archive Magshimim work, collaboration, and mentorship examples","2027-05-31","Explain technologies, individual responsibility, difficult problems, and impact."],
-      ["teaching","Secure two future recommenders and preserve continuity notes","2027-06-30","One math or physics teacher and one electronics or computing teacher."],
-      ["academic","Archive transcripts, Bagrut records, course descriptions, and grading context","2027-06-30","Preserve official records and English explanations before systems or staff change."],
-      ["engineering","Publish the final project package","2027-07-31","Complete the report, repository, poster, demonstration video, and one-page summary."],
-      ["research","Create the end-of-grade-12 application evidence archive","2027-07-31","Document activities, hours, awards, project history, essay scenes, contacts, and open questions."]
-    ];
-    const starter={active:"2026–2027",years:{
-      "2025–2026":{items:[
-        {id:"berkeley",cat:"academic",title:"Complete the six-week UC Berkeley astrophysics program",date:"2026-08-14",notes:"Archive the syllabus, grade, assignments, and strongest work.",type:"achievement",done:true},
-        {id:"physics97",cat:"academic",title:"Earn 97 on the Physics Bagrut",date:"2026-06-18",notes:"Evidence of sustained strength in advanced physics.",type:"achievement",done:true},
-        {id:"price-paper",cat:"research",title:"Complete research paper on Derek de Solla Price and ancient computers",date:"2026-08-10",notes:"Preserve the final paper and instructor feedback.",type:"achievement",done:true}
-      ]},
-      "2026–2027":{items:seedRows.map((r,i)=>({id:`seed-${i}`,cat:r[0],title:r[1],date:r[2],notes:r[3],type:"goal",done:false}))}
-    }};
-    const $=s=>document.querySelector(s), els={year:$("#year"),yearLabel:$("#yearLabel"),ring:$("#ring"),percent:$("#percent"),progressTitle:$("#progressTitle"),progressText:$("#progressText"),completed:$("#completed"),completedNote:$("#completedNote"),deadline:$("#deadline"),deadlineNote:$("#deadlineNote"),wins:$("#wins"),activeCats:$("#activeCats"),catNote:$("#catNote"),grid:$("#grid"),dialog:$("#dialog"),form:$("#form"),title:$("#title"),category:$("#category"),type:$("#type"),date:$("#date"),notes:$("#notes"),toasts:$("#toasts")};
-    let data=load(),preferredCat="academic";
-    function clone(v){return JSON.parse(JSON.stringify(v))}function load(){try{const x=JSON.parse(localStorage.getItem(KEY));return x?.years?x:clone(starter)}catch{return clone(starter)}}
-    function save(msg){localStorage.setItem(KEY,JSON.stringify(data));if(msg)toast(msg)}function yearData(){return data.years[data.active]}function items(){return yearData().items}
-    function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-    function id(){return crypto.randomUUID?.()||`i-${Date.now()}-${Math.random().toString(16).slice(2)}`}
-    function fmt(d,year=false){if(!d)return"No date";const x=new Date(`${d}T12:00:00`);return new Intl.DateTimeFormat(undefined,{month:"short",day:"numeric",year:year?"numeric":undefined}).format(x)}
-    function days(d){if(!d)return null;const a=new Date(`${d}T12:00:00`),b=new Date();b.setHours(12,0,0,0);return Math.ceil((a-b)/864e5)}
-    function badge(x){if(x.done)return'<span class="badge ok">Completed</span>';const n=days(x.date);if(n===null)return"";if(n<0)return'<span class="badge late">Overdue</span>';if(n===0)return'<span class="badge soon">Due today</span>';if(n<=14)return`<span class="badge soon">Due in ${n} day${n===1?"":"s"}</span>`;return""}
-    function progressCopy(p,c,t){if(!t)return["Mission initialized","Add a goal or achievement to begin tracking this year."];if(p===100)return["Mission complete",`All ${t} tracked items are complete.`];if(p>=75)return["Final approach",`${c} of ${t} complete. Finish deliberately rather than adding noise.`];if(p>=40)return["Systems nominal",`${c} of ${t} complete. Protect priorities and keep the next deadline visible.`];if(p>0)return["Trajectory established",`${c} of ${t} complete. Consistency beats a dramatic sprint.`];return["Launch sequence ready",`${t} items mapped. Complete the first concrete deliverable.`]}
-    function render(){
-      const years=Object.keys(data.years).sort((a,b)=>parseInt(a)-parseInt(b));els.year.innerHTML=years.map(y=>`<option ${y===data.active?"selected":""}>${esc(y)}</option>`).join("");els.yearLabel.textContent=`${data.active} Mission`;
-      els.category.innerHTML=categories.map(c=>`<option value="${c[0]}">${esc(c[1])}</option>`).join("");els.category.value=preferredCat;
-      const all=items(),total=all.length,complete=all.filter(x=>x.done).length,p=total?Math.round(complete/total*100):0,wins=all.filter(x=>x.type==="achievement").length,active=new Set(all.map(x=>x.cat)).size;
-      els.ring.style.setProperty("--p",`${p*3.6}deg`);els.percent.textContent=`${p}%`;const copy=progressCopy(p,complete,total);els.progressTitle.textContent=copy[0];els.progressText.textContent=copy[1];els.completed.textContent=complete;els.completedNote.textContent=`of ${total} item${total===1?"":"s"}`;els.wins.textContent=wins;els.activeCats.textContent=active;els.catNote.textContent=`of ${categories.length} mission areas`;
-      const upcoming=all.filter(x=>!x.done&&x.date).sort((a,b)=>a.date.localeCompare(b.date)),next=upcoming.find(x=>days(x.date)>=0)||upcoming[0];els.deadline.textContent=next?fmt(next.date):"—";els.deadlineNote.textContent=next?next.title:"No upcoming goals";
-      els.grid.innerHTML=categories.map(c=>categoryCard(c,all)).join("");
-    }
-    function categoryCard(c,all){const list=all.filter(x=>x.cat===c[0]).sort((a,b)=>a.done-b.done||(a.date||"9999").localeCompare(b.date||"9999")),done=list.filter(x=>x.done).length,p=list.length?Math.round(done/list.length*100):0;
-      return`<article class="category" style="--accent:${c[3]}"><div class="cat-head"><div class="cat-row"><div class="cat-icon">${c[2]}</div><div class="cat-copy"><h3>${esc(c[1])}</h3><span>${done} of ${list.length} complete</span></div><span class="cat-pct">${p}%</span></div><div class="track"><div class="fill" style="width:${p}%"></div></div></div>${list.length?`<ul class="tasks">${list.map(task).join("")}</ul>`:'<div class="empty">No items in this mission area yet.</div>'}<button class="btn add-cat" data-add="${c[0]}">＋ Add to ${esc(c[1])}</button></article>`}
-    function task(x){return`<li class="task ${x.done?"done":""}"><input class="check" type="checkbox" data-toggle="${x.id}" ${x.done?"checked":""} aria-label="Toggle ${esc(x.title)}"><div><p class="task-title">${esc(x.title)}</p>${x.notes?`<p class="notes">${esc(x.notes)}</p>`:""}<div class="meta"><span class="badge ${x.type==="achievement"?"win":""}">${x.type==="achievement"?"Achievement":"Goal"}</span>${x.date?`<span class="badge">${fmt(x.date,true)}</span>`:""}${badge(x)}</div></div><button class="trash" data-delete="${x.id}" aria-label="Delete ${esc(x.title)}">✕</button></li>`}
-    function openDialog(cat="academic"){preferredCat=categories.some(c=>c[0]===cat)?cat:"academic";els.form.reset();els.category.value=preferredCat;els.type.value="goal";els.dialog.showModal();requestAnimationFrame(()=>els.title.focus())}
-    function toast(msg){const n=document.createElement("div");n.className="toast";n.textContent=msg;els.toasts.append(n);setTimeout(()=>n.remove(),2300)}
-    $("#add").onclick=()=>openDialog();$("#close").onclick=$("#cancel").onclick=()=>els.dialog.close();els.dialog.onclick=e=>{if(e.target===els.dialog)els.dialog.close()};
-    els.form.onsubmit=e=>{e.preventDefault();const title=els.title.value.trim();if(!title)return;const type=els.type.value;items().push({id:id(),cat:els.category.value,title,date:els.date.value,notes:els.notes.value.trim(),type,done:type==="achievement"});save(type==="achievement"?"Achievement logged":"Goal added");els.dialog.close();render()};
-    els.year.onchange=e=>{data.active=e.target.value;save();render()};
-    $("#newYear").onclick=()=>{const starts=Object.keys(data.years).map(y=>parseInt(y)||0),s=Math.max(...starts)+1,input=prompt("Academic year, for example 2027–2028:",`${s}–${s+1}`);if(input===null)return;const y=input.trim().replace(/\s/g,"").replace("-","–"),m=y.match(/^(\d{4})–(\d{4})$/);if(!m||+m[2]!==+m[1]+1)return toast("Use a consecutive format such as 2027–2028.");data.years[y]??={items:[]};data.active=y;save(`${y} ready`);render()};
-    $("#clear").onclick=()=>{if(!items().length)return toast("This year is already empty.");if(confirm(`Delete all ${items().length} items from ${data.active}?`)){yearData().items=[];save("Year cleared");render()}};
-    els.grid.onclick=e=>{const add=e.target.closest("[data-add]"),del=e.target.closest("[data-delete]");if(add)return openDialog(add.dataset.add);if(del){const x=items().find(i=>i.id===del.dataset.delete);if(x&&confirm(`Delete “${x.title}”?`)){yearData().items=items().filter(i=>i.id!==x.id);save("Item deleted");render()}}};
-    els.grid.onchange=e=>{const box=e.target.closest("[data-toggle]");if(!box)return;const x=items().find(i=>i.id===box.dataset.toggle);if(x){x.done=!x.done;x.completedAt=x.done?new Date().toISOString():null;save(x.done?"Item completed":"Item reopened");render()}};
-    window.addEventListener("storage",e=>{if(e.key===KEY&&e.newValue){data=JSON.parse(e.newValue);render();toast("Updated from another tab")}});render();
-  </script>
+  <input type="file" id="importFile" accept="application/json" hidden>
+  <script src="app.js"></script>
 </body>
 </html>
