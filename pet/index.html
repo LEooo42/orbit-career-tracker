@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#191919">
+  <meta name="description" content="A local-first PET preparation tracker for mock scores, goals, tasks, and resources.">
+  <title>PET Prep Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="tracker-shell">
+    <header class="tracker-header">
+      <div class="identity">
+        <span class="scope">PET / PREP TRACKER</span>
+        <h1>Momentum</h1>
+      </div>
+      <div class="header-actions">
+        <button class="quiet-button" id="settingsButton">Exam setup</button>
+        <button class="primary-button" id="quickMock">Log mock</button>
+        <details class="more-menu">
+          <summary aria-label="More options">•••</summary>
+          <div class="menu-panel">
+            <button id="exportData">Export data</button>
+            <button id="importData">Import data</button>
+            <button class="danger" id="resetData">Reset PET tracker</button>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <section class="summary" aria-label="Preparation summary">
+      <div class="metric countdown-metric">
+        <span class="label">Exam countdown</span>
+        <strong id="countdown">Set date</strong>
+        <small id="examDateNote">Open exam setup to add the official date</small>
+      </div>
+      <div class="metric">
+        <span class="label">Target score</span>
+        <strong id="targetScore">690</strong>
+        <small id="targetGap">No mock logged yet</small>
+      </div>
+      <div class="metric">
+        <span class="label">Latest mock</span>
+        <strong id="latestScore">—</strong>
+        <small id="latestMeta">No attempts yet</small>
+      </div>
+      <div class="metric">
+        <span class="label">Mocks logged</span>
+        <strong id="mockCount">0</strong>
+        <small id="taskCompletion">0 of 0 tasks complete</small>
+      </div>
+    </section>
+
+    <nav class="category-tabs" id="mainTabs" aria-label="PET tracker sections">
+      <button data-tab="overview" class="active"><span>O</span>Overview</button>
+      <button data-tab="mocks"><span>M</span>Mocks<small id="mockTabCount">0</small></button>
+      <button data-tab="goals"><span>G</span>Goals<small id="goalTabCount">0</small></button>
+      <button data-tab="todos"><span>T</span>To-Dos<small id="todoTabCount">0</small></button>
+      <button data-tab="resources"><span>R</span>Resources<small id="resourceTabCount">0</small></button>
+    </nav>
+
+    <section class="workspace">
+      <section class="view active" data-view="overview">
+        <div class="overview-grid">
+          <article class="panel chart-panel">
+            <div class="panel-heading">
+              <div><span class="label">Progression</span><h2>Overall score trajectory</h2></div>
+              <span class="legend-inline"><i class="legend-total"></i>Total <i class="legend-target"></i>Target</span>
+            </div>
+            <div class="chart" id="overallChart"></div>
+          </article>
+
+          <article class="panel chart-panel">
+            <div class="panel-heading">
+              <div><span class="label">Sections</span><h2>Section progression</h2></div>
+              <span class="legend-inline"><i class="legend-quant"></i>Q <i class="legend-verbal"></i>V <i class="legend-english"></i>E</span>
+            </div>
+            <div class="chart" id="sectionChart"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div><span class="label">Snapshot</span><h2>Current position</h2></div>
+            </div>
+            <div class="snapshot-grid">
+              <div><span>Best score</span><strong id="bestScore">—</strong></div>
+              <div><span>Last 3 avg.</span><strong id="averageScore">—</strong></div>
+              <div><span>Improvement</span><strong id="improvementScore">—</strong></div>
+              <div><span>Open tasks</span><strong id="openTasks">0</strong></div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div><span class="label">Next up</span><h2>Upcoming work</h2></div>
+            </div>
+            <div class="upcoming-list" id="upcomingList"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" data-view="mocks">
+        <div class="section-toolbar">
+          <div><span class="label">Practice history</span><h2>Mock attempts</h2></div>
+          <button class="primary-button" id="addMock">Log mock</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Mock</th><th>Total</th><th>Quant.</th><th>Verbal</th><th>English</th><th>Change</th><th></th></tr></thead>
+            <tbody id="mockRows"></tbody>
+          </table>
+          <div class="empty-state" id="mockEmpty">No mock attempts logged yet.</div>
+        </div>
+      </section>
+
+      <section class="view" data-view="goals">
+        <div class="section-toolbar">
+          <div><span class="label">Milestones</span><h2>Goals</h2></div>
+          <button class="primary-button" id="addGoal">Add goal</button>
+        </div>
+        <div class="record-list" id="goalList"></div>
+      </section>
+
+      <section class="view" data-view="todos">
+        <div class="section-toolbar">
+          <div><span class="label">Execution</span><h2>To-Dos</h2></div>
+          <button class="primary-button" id="addTodo">Add task</button>
+        </div>
+        <div class="record-list" id="todoList"></div>
+      </section>
+
+      <section class="view" data-view="resources">
+        <div class="section-toolbar">
+          <div><span class="label">Library</span><h2>Sources, links & images</h2></div>
+          <button class="primary-button" id="addResource">Add resource</button>
+        </div>
+        <div class="resource-grid" id="resourceGrid"></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="settingsDialog">
+    <form id="settingsForm">
+      <div class="modal-title">
+        <div><span class="label">Preparation setup</span><h2>Exam settings</h2></div>
+        <button type="button" data-close="settingsDialog" aria-label="Close">×</button>
+      </div>
+      <label>Exam label<input name="examName" maxlength="80" placeholder="PET — April 2027"></label>
+      <div class="form-row">
+        <label>Official exam date<input name="examDate" type="date"></label>
+        <label>Target overall score<input name="targetScore" type="number" min="200" max="800" step="1"></label>
+      </div>
+      <div class="modal-actions"><button type="button" class="quiet-button" data-close="settingsDialog">Cancel</button><button class="primary-button">Save</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="mockDialog">
+    <form id="mockForm">
+      <div class="modal-title">
+        <div><span class="label">Practice record</span><h2>Log a mock</h2></div>
+        <button type="button" data-close="mockDialog" aria-label="Close">×</button>
+      </div>
+      <div class="form-row">
+        <label>Date<input name="date" type="date" required></label>
+        <label>Mock / source<input name="name" maxlength="100" required placeholder="NITE practice test 1"></label>
+      </div>
+      <div class="score-grid">
+        <label>Overall<input name="total" type="number" min="200" max="800" required placeholder="690"></label>
+        <label>Quantitative<input name="quantitative" type="number" min="50" max="150" placeholder="135"></label>
+        <label>Verbal<input name="verbal" type="number" min="50" max="150" placeholder="130"></label>
+        <label>English<input name="english" type="number" min="50" max="150" placeholder="140"></label>
+      </div>
+      <label>Link / source URL<input name="sourceUrl" type="url" placeholder="https://…"></label>
+      <label>Notes<textarea name="notes" rows="3" maxlength="800" placeholder="What went well, recurring mistakes, timing issues…"></textarea></label>
+      <div class="modal-actions"><button type="button" class="quiet-button" data-close="mockDialog">Cancel</button><button class="primary-button">Save attempt</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="goalDialog">
+    <form id="goalForm">
+      <div class="modal-title">
+        <div><span class="label">Milestone</span><h2>Add a goal</h2></div>
+        <button type="button" data-close="goalDialog" aria-label="Close">×</button>
+      </div>
+      <label>Goal<input name="title" maxlength="160" required placeholder="Reach 700+ in a full mock"></label>
+      <div class="form-row">
+        <label>Metric<select name="metric"><option value="overall">Overall</option><option value="quantitative">Quantitative</option><option value="verbal">Verbal</option><option value="english">English</option><option value="habit">Habit</option><option value="custom">Custom</option></select></label>
+        <label>Target value<input name="target" type="number" min="0" max="10000" placeholder="Optional"></label>
+      </div>
+      <label>Target date<input name="date" type="date"></label>
+      <label>Notes<textarea name="notes" rows="2" maxlength="500"></textarea></label>
+      <div class="modal-actions"><button type="button" class="quiet-button" data-close="goalDialog">Cancel</button><button class="primary-button">Save goal</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="todoDialog">
+    <form id="todoForm">
+      <div class="modal-title">
+        <div><span class="label">Action item</span><h2>Add a To-Do</h2></div>
+        <button type="button" data-close="todoDialog" aria-label="Close">×</button>
+      </div>
+      <label>Task<input name="title" maxlength="160" required></label>
+      <div class="form-row">
+        <label>Category<select name="category"><option>Quantitative</option><option>Verbal</option><option>English</option><option>Mock</option><option>Review</option><option>Vocabulary</option><option>Admin</option><option>Other</option></select></label>
+        <label>Due date<input name="date" type="date"></label>
+      </div>
+      <label>Notes<textarea name="notes" rows="2" maxlength="500"></textarea></label>
+      <div class="modal-actions"><button type="button" class="quiet-button" data-close="todoDialog">Cancel</button><button class="primary-button">Save task</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="resourceDialog">
+    <form id="resourceForm">
+      <div class="modal-title">
+        <div><span class="label">Library item</span><h2>Add a resource</h2></div>
+        <button type="button" data-close="resourceDialog" aria-label="Close">×</button>
+      </div>
+      <div class="form-row">
+        <label>Title<input name="title" maxlength="160" required></label>
+        <label>Type<select name="kind"><option>Practice</option><option>Theory</option><option>Vocabulary</option><option>Strategy</option><option>Mock</option><option>Image</option><option>Course</option><option>Other</option></select></label>
+      </div>
+      <label>Link<input name="url" type="url" placeholder="https://…"></label>
+      <label>Image URL<input name="imageUrl" type="url" placeholder="Optional preview image URL"></label>
+      <label>Or upload a small image<input name="imageFile" type="file" accept="image/*"><small class="field-note">Stored only in this browser. Keep uploads under 1.25 MB.</small></label>
+      <label>Notes<textarea name="notes" rows="3" maxlength="800"></textarea></label>
+      <div class="modal-actions"><button type="button" class="quiet-button" data-close="resourceDialog">Cancel</button><button class="primary-button">Save resource</button></div>
+    </form>
+  </dialog>
+
+  <input type="file" id="importFile" accept="application/json" hidden>
+  <script src="app.js"></script>
+</body>
+</html>
