@@ -2,7 +2,7 @@
 
 const STORAGE_KEY = "orbit-pet-prep-tracker-v1";
 const DEFAULT_DATA = {
-  exam: { name: "PET — April 2027", date: "2027-04-01", targetScore: 690 },
+  exam: { name: "PET — April 2027", date: "", targetScore: 690 },
   mocks: [],
   goals: [
     { id: "goal-target", title: "Reach 690+ on a full timed mock", metric: "overall", target: 690, date: "2027-03-20", notes: "Aim to hit target more than once before exam day.", done: false }
