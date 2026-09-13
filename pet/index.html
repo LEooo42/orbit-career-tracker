@@ -16,7 +16,11 @@
         <h1>Momentum</h1>
       </div>
       <div class="header-actions">
-        <button class="quiet-button" type="button" onclick="location.href='../master-tasks/'">Tasks</button>
+        <select class="page-switcher" aria-label="Switch tracker" onchange="if(this.value) location.href=this.value">
+          <option value="../">Astron</option>
+          <option value="./" selected>PET</option>
+          <option value="../master-tasks/">Tasks</option>
+        </select>
         <button class="quiet-button" id="settingsButton">Exam setup</button>
         <button class="primary-button" id="quickMock">Log mock</button>
         <details class="more-menu">
