@@ -272,7 +272,7 @@ $("#nextBrightSpot").addEventListener("click",()=>{data.brightIndex=((data.brigh
 $$("[data-close]").forEach(b=>b.addEventListener("click",()=>closeDialog(b.dataset.close)));
 $$("dialog").forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.close();}));
 
-$("#taskForm").files.addEventListener("change",async e=>{
+$("#taskForm").querySelector('input[name="files"]').addEventListener("change",async e=>{
   for(const file of Array.from(e.target.files||[])){
     if(file.size>1.25*1024*1024){alert(file.name+" is larger than 1.25 MB.");continue;}
     try{pendingAttachments.push({id:makeId(),name:file.name,type:file.type||"application/octet-stream",size:file.size,data:await fileToDataUrl(file)});}catch{}
