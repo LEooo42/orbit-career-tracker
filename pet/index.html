@@ -228,6 +228,20 @@
     </form>
   </dialog>
 
+  <dialog id="confirmDialog">
+    <form id="confirmForm">
+      <div class="modal-title">
+        <div><span class="label">Confirm action</span><h2 id="confirmTitle">Are you sure?</h2></div>
+        <button type="button" id="confirmClose" aria-label="Close">×</button>
+      </div>
+      <p id="confirmMessage" class="confirm-message"></p>
+      <div class="modal-actions">
+        <button type="button" class="quiet-button" id="confirmCancel">Cancel</button>
+        <button type="submit" class="primary-button" id="confirmAccept">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
   <input type="file" id="importFile" accept="application/json" hidden>
   <script src="app.js"></script>
 </body>
