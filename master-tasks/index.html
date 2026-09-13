@@ -16,8 +16,11 @@
         <h1>Vector</h1>
       </div>
       <div class="header-actions">
-        <a class="quiet-button link-button" href="../">Astron</a>
-        <a class="quiet-button link-button" href="../pet/">PET</a>
+        <select class="page-switcher" aria-label="Switch tracker" onchange="if(this.value) location.href=this.value">
+          <option value="../">Astron</option>
+          <option value="../pet/">PET</option>
+          <option value="./" selected>Tasks</option>
+        </select>
         <button class="primary-button" id="addDetailedTask">New task</button>
         <details class="more-menu">
           <summary aria-label="More options">•••</summary>
