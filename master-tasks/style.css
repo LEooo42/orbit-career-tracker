@@ -162,3 +162,6 @@ dialog textarea{resize:vertical;min-height:74px}
   .quick-capture input,.quick-capture select,.quick-capture .primary-button{height:38px}
   .panel-heading{height:44px}.deadline-list,.bright-spot,.chart,.status-mix{height:calc(100% - 44px)}
 }
+
+.page-switcher{height:32px;min-width:104px;padding:0 28px 0 10px;border:1px solid var(--line-strong);background:var(--surface);color:var(--parchment);font-size:11px;font-weight:600}
+.page-switcher:hover{background:var(--surface-2)}
