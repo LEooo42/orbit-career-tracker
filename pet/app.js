@@ -201,6 +201,34 @@ function openMockDialog(){ const f=$("#mockForm"); if(!f.date.value)f.date.value
 function optionalScore(v){ if(v==null||String(v).trim()==="")return ""; return Math.max(50,Math.min(150,Number(v)||50)); }
 function fileToDataUrl(file){ return new Promise((resolve,reject)=>{ const r=new FileReader(); r.onload=()=>resolve(String(r.result||"")); r.onerror=reject; r.readAsDataURL(file); }); }
 
+function askConfirm(message, actionLabel){
+  return new Promise(resolve=>{
+    const dialog=$("#confirmDialog");
+    $("#confirmMessage").textContent=message;
+    $("#confirmAccept").textContent=actionLabel||"Confirm";
+
+    const cleanup=()=>{
+      $("#confirmForm").removeEventListener("submit",onSubmit);
+      $("#confirmCancel").removeEventListener("click",onCancel);
+      $("#confirmClose").removeEventListener("click",onCancel);
+      dialog.removeEventListener("cancel",onCancel);
+    };
+    const finish=value=>{
+      cleanup();
+      if(dialog.open) dialog.close();
+      resolve(value);
+    };
+    const onSubmit=e=>{ e.preventDefault(); finish(true); };
+    const onCancel=e=>{ if(e) e.preventDefault(); finish(false); };
+
+    $("#confirmForm").addEventListener("submit",onSubmit);
+    $("#confirmCancel").addEventListener("click",onCancel);
+    $("#confirmClose").addEventListener("click",onCancel);
+    dialog.addEventListener("cancel",onCancel);
+    dialog.showModal();
+  });
+}
+
 $("#mainTabs").addEventListener("click",e=>{
   const b=e.target.closest("[data-tab]"); if(!b)return;
   $$("#mainTabs button").forEach(x=>x.classList.toggle("active",x===b));
@@ -246,12 +274,12 @@ $("#resourceForm").addEventListener("submit",async e=>{
   save(); formEl.reset(); closeDialog("resourceDialog"); render();
 });
 
-$("#mockRows").addEventListener("click",e=>{ const b=e.target.closest("[data-delete-mock]"); if(!b||!confirm("Delete this mock attempt?"))return; data.mocks=data.mocks.filter(x=>x.id!==b.dataset.deleteMock); save(); render(); });
+$("#mockRows").addEventListener("click",async e=>{ const b=e.target.closest("[data-delete-mock]"); if(!b)return; if(!await askConfirm("Delete this mock attempt?","Delete"))return; data.mocks=data.mocks.filter(x=>x.id!==b.dataset.deleteMock); save(); render(); });
 $("#goalList").addEventListener("change",e=>{ const i=e.target.closest("[data-toggle-goal]"); if(!i)return; const x=data.goals.find(g=>g.id===i.dataset.toggleGoal); if(x){x.done=i.checked;x.completedAt=x.done?new Date().toISOString():null;save();render();} });
 $("#todoList").addEventListener("change",e=>{ const i=e.target.closest("[data-toggle-todo]"); if(!i)return; const x=data.todos.find(t=>t.id===i.dataset.toggleTodo); if(x){x.done=i.checked;x.completedAt=x.done?new Date().toISOString():null;save();render();} });
-$("#goalList").addEventListener("click",e=>{ const b=e.target.closest("[data-delete-goal]"); if(!b||!confirm("Delete this goal?"))return; data.goals=data.goals.filter(x=>x.id!==b.dataset.deleteGoal);save();render(); });
-$("#todoList").addEventListener("click",e=>{ const b=e.target.closest("[data-delete-todo]"); if(!b||!confirm("Delete this task?"))return; data.todos=data.todos.filter(x=>x.id!==b.dataset.deleteTodo);save();render(); });
-$("#resourceGrid").addEventListener("click",e=>{ const b=e.target.closest("[data-delete-resource]"); if(!b||!confirm("Delete this resource?"))return; data.resources=data.resources.filter(x=>x.id!==b.dataset.deleteResource);save();render(); });
+$("#goalList").addEventListener("click",async e=>{ const b=e.target.closest("[data-delete-goal]"); if(!b)return; if(!await askConfirm("Delete this goal?","Delete"))return; data.goals=data.goals.filter(x=>x.id!==b.dataset.deleteGoal);save();render(); });
+$("#todoList").addEventListener("click",async e=>{ const b=e.target.closest("[data-delete-todo]"); if(!b)return; if(!await askConfirm("Delete this task?","Delete"))return; data.todos=data.todos.filter(x=>x.id!==b.dataset.deleteTodo);save();render(); });
+$("#resourceGrid").addEventListener("click",async e=>{ const b=e.target.closest("[data-delete-resource]"); if(!b)return; if(!await askConfirm("Delete this resource?","Delete"))return; data.resources=data.resources.filter(x=>x.id!==b.dataset.deleteResource);save();render(); });
 
 $("#exportData").addEventListener("click",()=>{
   closeMenus(); const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}), url=URL.createObjectURL(blob), a=document.createElement("a"); a.href=url; a.download="pet-prep-tracker-data.json"; a.click(); URL.revokeObjectURL(url);
@@ -259,11 +287,11 @@ $("#exportData").addEventListener("click",()=>{
 $("#importData").addEventListener("click",()=>{ closeMenus(); $("#importFile").click(); });
 $("#importFile").addEventListener("change",async e=>{
   const file=e.target.files[0]; if(!file)return;
-  try{ const imported=JSON.parse(await file.text()); if(!validData(imported))throw new Error(); if(!confirm("Replace this browser's PET tracker data with the imported file?"))return; data=imported;save();render(); }
+  try{ const imported=JSON.parse(await file.text()); if(!validData(imported))throw new Error(); if(!await askConfirm("Replace this browser's PET tracker data with the imported file?","Replace"))return; data=imported;save();render(); }
   catch{ alert("This does not appear to be a valid PET tracker backup."); }
   finally{ e.target.value=""; }
 });
-$("#resetData").addEventListener("click",()=>{ closeMenus(); if(!confirm("Reset all PET tracker data in this browser?"))return; data=clone(DEFAULT_DATA);save();render(); });
+$("#resetData").addEventListener("click",async ()=>{ closeMenus(); if(!await askConfirm("Reset all PET tracker data in this browser?","Reset"))return; data=clone(DEFAULT_DATA);save();render(); });
 window.addEventListener("storage",e=>{ if(e.key!==STORAGE_KEY||!e.newValue)return; try{ const n=JSON.parse(e.newValue); if(validData(n)){data=n;render();} }catch{} });
 
 render();
