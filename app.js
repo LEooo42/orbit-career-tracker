@@ -114,6 +114,34 @@ function taskHtml(item) {
 
 function closeMenus() { document.querySelectorAll("details[open]").forEach(menu => menu.removeAttribute("open")); }
 
+function askConfirm(message, actionLabel = "Confirm") {
+  return new Promise(resolve => {
+    const confirmDialog = $("#confirmDialog");
+    $("#confirmMessage").textContent = message;
+    $("#confirmAccept").textContent = actionLabel;
+
+    const cleanup = () => {
+      $("#confirmForm").removeEventListener("submit", onSubmit);
+      $("#confirmCancel").removeEventListener("click", onCancel);
+      $("#confirmClose").removeEventListener("click", onCancel);
+      confirmDialog.removeEventListener("cancel", onCancel);
+    };
+    const finish = value => {
+      cleanup();
+      if (confirmDialog.open) confirmDialog.close();
+      resolve(value);
+    };
+    const onSubmit = event => { event.preventDefault(); finish(true); };
+    const onCancel = event => { if (event) event.preventDefault(); finish(false); };
+
+    $("#confirmForm").addEventListener("submit", onSubmit);
+    $("#confirmCancel").addEventListener("click", onCancel);
+    $("#confirmClose").addEventListener("click", onCancel);
+    confirmDialog.addEventListener("cancel", onCancel);
+    confirmDialog.showModal();
+  });
+}
+
 $("#year").addEventListener("change", event => { data.active = event.target.value; save(); render(); });
 $("#newYear").addEventListener("click", () => {
   const latest = Math.max(...Object.keys(data.years).map(year => parseInt(year, 10) || 0));
@@ -132,9 +160,9 @@ $("#taskList").addEventListener("change", event => {
   const item = currentItems().find(entry => entry.id === input.dataset.toggle);
   if (item) { item.done = !item.done; item.completedAt = item.done ? new Date().toISOString() : null; save(); render(); }
 });
-$("#taskList").addEventListener("click", event => {
+$("#taskList").addEventListener("click", async event => {
   const button = event.target.closest("[data-delete]"); if (!button) return;
-  if (!confirm("Delete this item?")) return;
+  if (!await askConfirm("Delete this item?", "Delete")) return;
   data.years[data.active].items = currentItems().filter(item => item.id !== button.dataset.delete); save(); render();
 });
 
@@ -150,14 +178,14 @@ $("#itemForm").addEventListener("submit", event => {
   save(); event.currentTarget.reset(); dialog.close(); render();
 });
 
-$("#clearYear").addEventListener("click", () => { closeMenus(); if (!currentItems().length) return; if (confirm(`Delete all ${currentItems().length} items from ${data.active}?`)) { data.years[data.active].items = []; save(); render(); } });
+$("#clearYear").addEventListener("click", async () => { closeMenus(); if (!currentItems().length) return; if (await askConfirm(`Delete all ${currentItems().length} items from ${data.active}?`, "Delete all")) { data.years[data.active].items = []; save(); render(); } });
 $("#exportData").addEventListener("click", () => {
   closeMenus(); const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = "astron-tracker-data.json"; link.click(); URL.revokeObjectURL(url);
 });
 $("#importData").addEventListener("click", () => { closeMenus(); $("#importFile").click(); });
 $("#importFile").addEventListener("change", async event => {
   const file = event.target.files[0]; if (!file) return;
-  try { const imported = JSON.parse(await file.text()); if (!validData(imported)) throw new Error(); if (!confirm("Replace this browser's tracker data with the imported file?")) return; data = imported; save(); render(); }
+  try { const imported = JSON.parse(await file.text()); if (!validData(imported)) throw new Error(); if (!await askConfirm("Replace this browser's tracker data with the imported file?", "Replace")) return; data = imported; save(); render(); }
   catch { alert("This does not appear to be a valid Astron Tracker backup."); }
   finally { event.target.value = ""; }
 });
