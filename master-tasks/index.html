@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#191919">
+  <meta name="description" content="A fast local-first master task dashboard for Mission Control.">
+  <title>Master Tasks</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="tracker-shell">
+    <header class="tracker-header">
+      <div class="identity">
+        <span class="scope">MISSION CONTROL / MASTER TASKS</span>
+        <h1>Vector</h1>
+      </div>
+      <div class="header-actions">
+        <a class="quiet-button link-button" href="../">Astron</a>
+        <a class="quiet-button link-button" href="../pet/">PET</a>
+        <button class="primary-button" id="addDetailedTask">New task</button>
+        <details class="more-menu">
+          <summary aria-label="More options">•••</summary>
+          <div class="menu-panel">
+            <button id="exportData">Export data</button>
+            <button id="importData">Import data</button>
+            <button class="danger" id="resetData">Reset task tracker</button>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <section class="summary" aria-label="Task summary">
+      <div class="metric">
+        <span class="label">Open</span>
+        <strong id="openCount">0</strong>
+        <small id="openNote">Nothing waiting</small>
+      </div>
+      <div class="metric">
+        <span class="label">Due soon</span>
+        <strong id="dueSoonCount">0</strong>
+        <small>next 7 days</small>
+      </div>
+      <div class="metric">
+        <span class="label">Completed</span>
+        <strong id="completedCount">0</strong>
+        <small id="completionRate">0% overall</small>
+      </div>
+      <div class="metric quote-metric">
+        <span class="label">Signal</span>
+        <strong id="quoteText">Start before you're ready.</strong>
+        <small id="quoteSource">Daily note</small>
+      </div>
+    </section>
+
+    <form class="quick-capture" id="quickForm">
+      <input name="title" id="quickTitle" maxlength="180" placeholder="Quick capture — what needs doing?" autocomplete="off" required>
+      <select name="area" aria-label="Area">
+        <option>Academics</option>
+        <option>Cyber</option>
+        <option>Astron</option>
+        <option>PET</option>
+        <option>IDF</option>
+        <option>Traveling</option>
+        <option>Personal</option>
+        <option>Other</option>
+      </select>
+      <input name="date" type="date" aria-label="Due date">
+      <button class="primary-button">Add</button>
+    </form>
+
+    <section class="workspace">
+      <aside class="left-rail">
+        <article class="rail-panel deadlines-panel">
+          <div class="panel-heading">
+            <div><span class="label">Major deadlines</span><h2>On the radar</h2></div>
+            <span class="tiny-note">flagged tasks</span>
+          </div>
+          <div id="deadlineList" class="deadline-list"></div>
+        </article>
+
+        <article class="rail-panel bright-panel">
+          <div class="panel-heading">
+            <div><span class="label">Bright spot</span><h2>Good things happen too</h2></div>
+            <button class="icon-button" id="nextBrightSpot" aria-label="Next bright spot">↻</button>
+          </div>
+          <div class="bright-spot">
+            <p id="brightText"></p>
+            <small id="brightMeta"></small>
+          </div>
+        </article>
+
+        <article class="rail-panel chart-panel">
+          <div class="panel-heading">
+            <div><span class="label">Workload</span><h2>Tasks by area</h2></div>
+          </div>
+          <div class="chart" id="areaChart"></div>
+        </article>
+      </aside>
+
+      <section class="task-panel">
+        <div class="task-toolbar">
+          <div class="search-wrap">
+            <input id="searchInput" type="search" placeholder="Search tasks, notes, areas…" aria-label="Search tasks">
+          </div>
+          <select id="statusFilter" aria-label="Filter by status">
+            <option value="open">Open tasks</option>
+            <option value="all">All statuses</option>
+            <option value="Inbox">Inbox</option>
+            <option value="Next">Next</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Waiting">Waiting</option>
+            <option value="Done">Done</option>
+          </select>
+          <select id="areaFilter" aria-label="Filter by area"><option value="all">All areas</option></select>
+          <select id="sortSelect" aria-label="Sort tasks">
+            <option value="smart">Smart sort</option>
+            <option value="due">Due date</option>
+            <option value="priority">Priority</option>
+            <option value="created">Newest</option>
+            <option value="area">Area</option>
+          </select>
+        </div>
+
+        <div class="task-header-row">
+          <span>Task</span><span>Area</span><span>Due</span><span>Status</span><span></span>
+        </div>
+        <div class="task-list" id="taskList"></div>
+        <footer class="task-footer">
+          <span>Saved in this browser</span>
+          <span id="visibleCount">0 tasks</span>
+        </footer>
+      </section>
+
+      <aside class="right-rail">
+        <article class="rail-panel chart-panel">
+          <div class="panel-heading">
+            <div><span class="label">Progress</span><h2>Completion pulse</h2></div>
+          </div>
+          <div class="chart" id="completionChart"></div>
+        </article>
+        <article class="rail-panel status-panel">
+          <div class="panel-heading">
+            <div><span class="label">Flow</span><h2>Status mix</h2></div>
+          </div>
+          <div id="statusMix" class="status-mix"></div>
+        </article>
+      </aside>
+    </section>
+  </main>
+
+  <dialog id="taskDialog">
+    <form id="taskForm">
+      <input type="hidden" name="id">
+      <div class="modal-title">
+        <div><span class="label" id="dialogEyebrow">Task details</span><h2 id="dialogTitle">New task</h2></div>
+        <button type="button" data-close="taskDialog" aria-label="Close">×</button>
+      </div>
+      <label>Task<input name="title" maxlength="180" required></label>
+      <div class="form-row">
+        <label>Area<select name="area" id="dialogArea"></select></label>
+        <label>Status<select name="status">
+          <option>Inbox</option><option>Next</option><option>In Progress</option><option>Waiting</option><option>Done</option>
+        </select></label>
+      </div>
+      <div class="form-row">
+        <label>Due date<input name="date" type="date"></label>
+        <label>Priority<select name="priority">
+          <option>Medium</option><option>Critical</option><option>High</option><option>Low</option>
+        </select></label>
+      </div>
+      <div class="form-row compact-row">
+        <label class="check-label"><input name="major" type="checkbox"> Major deadline</label>
+        <label>Estimated hours<input name="hours" type="number" min="0" max="999" step="0.25" placeholder="Optional"></label>
+      </div>
+      <label>Notes<textarea name="notes" rows="3" maxlength="1200" placeholder="Context, next step, links, submission details…"></textarea></label>
+      <label>Attach files<input name="files" type="file" multiple><small class="field-note">Stored only in this browser. Up to 1.25 MB per file.</small></label>
+      <div id="attachmentList" class="attachment-list"></div>
+      <div class="modal-actions">
+        <button type="button" class="danger-button" id="deleteTaskButton">Delete</button>
+        <span class="modal-spacer"></span>
+        <button type="button" class="quiet-button" data-close="taskDialog">Cancel</button>
+        <button class="primary-button">Save task</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="confirmDialog">
+    <form id="confirmForm">
+      <div class="modal-title">
+        <div><span class="label">Confirm action</span><h2>Are you sure?</h2></div>
+        <button type="button" id="confirmClose" aria-label="Close">×</button>
+      </div>
+      <p id="confirmMessage" class="confirm-message"></p>
+      <div class="modal-actions">
+        <button type="button" class="quiet-button" id="confirmCancel">Cancel</button>
+        <button type="submit" class="primary-button" id="confirmAccept">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <input type="file" id="importFile" accept="application/json" hidden>
+  <script src="app.js?v=20260913-1"></script>
+</body>
+</html>
