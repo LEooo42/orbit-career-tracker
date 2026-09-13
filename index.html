@@ -14,7 +14,11 @@
       <div class="identity"><span class="scope">ASTRON / TRACKER</span><h1>Trajectory</h1></div>
       <div class="header-actions">
         <select id="year" aria-label="Academic year"></select>
-        <button class="quiet-button" type="button" onclick="location.href='master-tasks/'">Tasks</button>
+        <select class="page-switcher" aria-label="Switch tracker" onchange="if(this.value) location.href=this.value">
+          <option value="./" selected>Astron</option>
+          <option value="pet/">PET</option>
+          <option value="master-tasks/">Tasks</option>
+        </select>
         <button class="quiet-button" id="newYear">New year</button>
         <button class="primary-button" id="addItem">Add item</button>
         <details class="more-menu">
